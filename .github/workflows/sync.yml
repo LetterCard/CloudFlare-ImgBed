@@ -1,0 +1,143 @@
+name: Sync CloudFlare ImgBed
+
+
+on:
+
+  schedule:
+    - cron: "0 */12 * * *"
+
+  workflow_dispatch:
+
+
+
+permissions:
+  contents: write
+
+
+
+jobs:
+
+
+  sync:
+
+
+    runs-on: ubuntu-latest
+
+
+    steps:
+
+
+      # 拉取自己的仓库
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+
+
+      # 保存自己的 workflow
+      - name: Backup workflow
+        run: |
+
+          mkdir -p /tmp/my-workflows
+
+          cp -r .github/workflows/* /tmp/my-workflows/ || true
+
+
+
+
+      # 同步上游
+      - name: Pull upstream
+        run: |
+
+
+          git remote remove upstream || true
+
+
+          git remote add upstream \
+          https://github.com/MarSeventh/CloudFlare-ImgBed.git
+
+
+
+          git fetch upstream
+
+
+
+          # 删除代码文件
+          git rm -rf . || true
+
+
+
+          # 拉取上游代码
+          git checkout upstream/main -- .
+
+
+
+          # 删除上游 workflow
+          rm -rf .github/workflows
+
+
+
+
+      # 恢复自己的 workflow
+      - name: Restore workflow
+        run: |
+
+
+          mkdir -p .github/workflows
+
+
+          cp -r /tmp/my-workflows/* .github/workflows/
+
+
+
+
+      # 替换品牌链接
+      - name: Replace URL
+        run: |
+
+
+          find . \
+          -type f \
+          ! -path "./.git/*" \
+          ! -path "./.github/workflows/*" \
+          -exec sed -i \
+          's#https://github.com/MarSeventh/CloudFlare-ImgBed#https://1000.run#g' {} +
+
+
+
+
+      # 提交代码
+      - name: Commit
+        run: |
+
+
+          git config user.name "github-actions"
+
+          git config user.email "github-actions@github.com"
+
+
+
+          git add .
+
+
+
+          # 关键：
+          # 不提交 workflow 文件
+          git reset -- .github/workflows
+
+
+
+          git commit \
+          -m "Sync upstream and replace URL" \
+          || echo "No changes"
+
+
+
+
+      # 推送
+      - name: Push
+        run: |
+
+
+          git push origin main
