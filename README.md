@@ -1,6 +1,6 @@
 <div align="center">
     <a href="https://1000.run"><img width="80%" alt="logo" src="readme/banner.png" /></a>
-    <p><em>🗂️ An open-source file hosting solution for Docker and serverless environments, with multiple storage backends, a RESTful API, and WebDAV support.</em></p>
+    <p><em>🗂️ Beyond image hosting: an all-in-one, open-source file management hub.</em></p>
     <p>
         <a href="https://1000.run/blob/main/README_zh.md">简体中文</a> | <a href="https://1000.run/blob/main/README.md">English</a> | <a href="https://cfbed.sanyue.de/en">Official Website</a>
     </p>
