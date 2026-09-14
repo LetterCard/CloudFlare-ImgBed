@@ -3,7 +3,6 @@ name: 同步上游文件
 on:
   schedule:
     - cron: "0 */12 * * *"
-
   workflow_dispatch:
 
 permissions:
@@ -11,7 +10,7 @@ permissions:
 
 jobs:
   sync:
-    name: 同步上游文件 # 此处增加中文名称，界面红框将显示该文字
+    name: 同步上游文件
     runs-on: ubuntu-latest
     steps:
       # 拉取自己的仓库
@@ -41,7 +40,7 @@ jobs:
           # 拉取上游代码
           git checkout upstream/main -- .
 
-          # 删除上游 workflow
+          # 删除上游 workflow（为恢复自身工作流腾出位置）
           rm -rf .github/workflows
 
       # 恢复自己的 workflow
@@ -49,6 +48,14 @@ jobs:
         run: |
           mkdir -p .github/workflows
           cp -r /tmp/my-workflows/* .github/workflows/
+
+      # 清理上游残留的 .github 目录（仅保留 workflows）
+      - name: 清理残留配置
+        run: |
+          # 删除 .github 下除 workflows 外的所有文件和文件夹（如上游的 ISSUE_TEMPLATE 等）
+          find .github -mindepth 1 -maxdepth 1 ! -name "workflows" -exec rm -rf {} +
+          # 兜底确保 workflows 目录存在
+          mkdir -p .github/workflows
 
       # 替换品牌链接
       - name: 替换品牌链接
@@ -68,8 +75,7 @@ jobs:
 
           git add .
 
-          # 关键：
-          # 不提交 workflow 文件
+          # 关键：不提交 workflow 文件（仅提交业务代码）
           git reset -- .github/workflows
 
           git commit \
