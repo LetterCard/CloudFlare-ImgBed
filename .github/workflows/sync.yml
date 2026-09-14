@@ -1,102 +1,58 @@
 name: 同步上游文件
 
-
 on:
-
   schedule:
     - cron: "0 */12 * * *"
 
   workflow_dispatch:
 
-
-
 permissions:
   contents: write
 
-
-
 jobs:
-
-
   sync:
-
-
+    name: 同步上游文件 # 此处增加中文名称，界面红框将显示该文字
     runs-on: ubuntu-latest
-
-
     steps:
-
-
       # 拉取自己的仓库
       - name: 拉取上游仓库
         uses: actions/checkout@v7
         with:
           fetch-depth: 0
 
-
-
       # 保存自己的 workflow
       - name: 备份工作流
         run: |
-
           mkdir -p /tmp/my-workflows
-
           cp -r .github/workflows/* /tmp/my-workflows/ || true
 
-
-
-
       # 同步上游
-      - name:  同步上游文件
+      - name: 同步上游文件
         run: |
-
-
           git remote remove upstream || true
-
-
           git remote add upstream \
           https://github.com/MarSeventh/CloudFlare-ImgBed.git
 
-
-
           git fetch upstream
-
-
 
           # 删除代码文件
           git rm -rf . || true
 
-
-
           # 拉取上游代码
           git checkout upstream/main -- .
-
-
 
           # 删除上游 workflow
           rm -rf .github/workflows
 
-
-
-
       # 恢复自己的 workflow
       - name: 恢复工作流
         run: |
-
-
           mkdir -p .github/workflows
-
-
           cp -r /tmp/my-workflows/* .github/workflows/
-
-
-
 
       # 替换品牌链接
       - name: 替换品牌链接
         run: |
-
-
           find . \
           -type f \
           ! -path "./.git/*" \
@@ -104,40 +60,23 @@ jobs:
           -exec sed -i \
           's#https://github.com/MarSeventh/CloudFlare-ImgBed#https://1000.run#g' {} +
 
-
-
-
       # 提交代码
       - name: 提交代码
         run: |
-
-
           git config user.name "github-actions"
-
           git config user.email "github-actions@github.com"
 
-
-
           git add .
-
-
 
           # 关键：
           # 不提交 workflow 文件
           git reset -- .github/workflows
 
-
-
           git commit \
-          -m "Sync upstream and replace URL" \
-          || echo "No changes"
-
-
-
+          -m "同步上游并替换链接" \
+          || echo "无变更"
 
       # 推送
       - name: 推送
         run: |
-
-
           git push origin main
