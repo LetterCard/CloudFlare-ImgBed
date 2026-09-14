@@ -28,7 +28,7 @@ jobs:
 
 
       # 拉取自己的仓库
-      - name: Checkout
+      - name: 拉取上游仓库
         uses: actions/checkout@v7
         with:
           fetch-depth: 0
@@ -36,7 +36,7 @@ jobs:
 
 
       # 保存自己的 workflow
-      - name: Backup workflow
+      - name: 备份工作流
         run: |
 
           mkdir -p /tmp/my-workflows
@@ -80,7 +80,7 @@ jobs:
 
 
       # 恢复自己的 workflow
-      - name: Restore workflow
+      - name: 恢复工作流
         run: |
 
 
@@ -93,7 +93,7 @@ jobs:
 
 
       # 替换品牌链接
-      - name: Replace URL
+      - name: 替换品牌链接
         run: |
 
 
@@ -108,7 +108,7 @@ jobs:
 
 
       # 提交代码
-      - name: Commit
+      - name: 提交代码
         run: |
 
 
@@ -136,7 +136,7 @@ jobs:
 
 
       # 推送
-      - name: Push
+      - name: 推送
         run: |
 
 
